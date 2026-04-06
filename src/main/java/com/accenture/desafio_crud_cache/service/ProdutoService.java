@@ -4,6 +4,8 @@ import com.accenture.desafio_crud_cache.config.SequenceGeneratorService;
 import com.accenture.desafio_crud_cache.dto.ProdutoDTO;
 import com.accenture.desafio_crud_cache.model.Produto;
 import com.accenture.desafio_crud_cache.repository.ProdutoRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,10 +34,12 @@ public class ProdutoService {
         return repository.save(produto);
     }
 
+    @Cacheable(value = "produtos")
     public List<Produto> listar() {
         return repository.findAll();
     }
 
+    @CacheEvict(value = "produtos", allEntries = true)
     public Produto atualizar(Long id, ProdutoDTO dto) {
         Produto produto = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
@@ -47,6 +51,7 @@ public class ProdutoService {
         return repository.save(produto);
     }
 
+    @CacheEvict(value = "produtos", allEntries = true)
     public void deletar(Long id) {
         repository.deleteById(id);
     }
